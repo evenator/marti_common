@@ -53,6 +53,23 @@ target_link_libraries(transformer_plugins ${PROJECT_NAME})
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
 
+##### Create Python Module ####
+
+catkin_python_setup()
+set(Python_ADDITIONAL_VERSIONS 2.7)
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_PATH})
+
+link_libraries(${PYTHON_LIBRARIES})
+add_library(${PROJECT_NAME}_py
+  src/py_transform_util.cpp
+  src/local_xy_util.cpp
+  src/transform_util.cpp
+)
+set_target_properties(${PROJECT_NAME}_py PROPERTIES OUTPUT_NAME ${PROJECT_NAME} PREFIX "_" SUFFIX ".so"
+  LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${PYTHON_INSTALL_DIR}/${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}_py ${Boost_LIBRARIES} ${catkin_LIBRARIES})
+
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
 
@@ -82,6 +99,9 @@ install(TARGETS ${PROJECT_NAME} lat_lon_tf_echo transformer_plugins
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
+
+install(TARGETS ${PROJECT_NAME}_py
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/${PYTHON_INSTALL_DIR}/${PROJECT_NAME})
 
 ### Install Python Nodes/Scripts ###
 catkin_install_python(PROGRAMS nodes/initialize_origin.py
