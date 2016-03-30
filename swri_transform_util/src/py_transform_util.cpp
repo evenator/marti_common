@@ -117,6 +117,25 @@ static PyObject* GreatCircleDistance(PyObject *self, PyObject *args, PyObject *k
       dst_longitude));
 }
 
+static PyObject* GetBearing(PyObject *self, PyObject *args, PyObject *kw)
+{
+  static const char *keywords[] = { "src_latitude", "src_longitude", "dst_latitude", "dst_longitude", NULL };
+  double src_latitude, src_longitude, dst_latitude, dst_longitude;
+  if (!PyArg_ParseTupleAndKeywords(args, kw, "dddd", (char**)keywords,
+      &src_latitude,
+      &src_longitude,
+      &dst_latitude,
+      &dst_longitude))
+  {
+    return NULL;
+  }
+  return PyFloat_FromDouble(swri_transform_util::GetBearing(
+      src_latitude,
+      src_longitude,
+      dst_latitude,
+      dst_longitude));
+}
+
 static PyObject* Wgs84FromLocalXy(PyObject *self, PyObject *args, PyObject *kw)
 {
   static const char *keywords[] = { "x", "y", "reference_latitude", "reference_longitude", NULL };
@@ -171,8 +190,8 @@ static PyMethodDef module_methods[] = {
     // Methods from transform_util.h
     { "GetRelativeTransform", (PyCFunction)GetRelativeTransform, METH_VARARGS, NULL },
      { "GreatCircleDistance", (PyCFunction)GreatCircleDistance, METH_VARARGS, NULL },
-    /*
      { "GetBearing", (PyCFunction)GetBearing, METH_VARARGS, NULL },
+    /*
      { "GetHeading", (PyCFunction)GetMidpointLatLon, METH_VARARGS, NULL },
      { "ToHeading", (PyCFunction)GetMidpointLatLon, METH_VARARGS, NULL },
      { "ToYaw", (PyCFunction)GetMidpointLatLon, METH_VARARGS, NULL },
